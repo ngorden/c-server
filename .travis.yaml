@@ -1,0 +1,11 @@
+language: c
+compiler:
+  - clang
+  - gcc
+env:
+  - CFLAGS="-ansi -Wpedantic"
+os:
+  - linux
+  - osx
+script:
+  make test
