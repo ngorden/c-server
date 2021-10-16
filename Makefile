@@ -8,7 +8,7 @@ INC	:=	src
 SRC	:=	src
 TST	:=	test
 
-SRCS	:=	$(wildcard $(SRC)/*.c)
+SRCS	:=	$(wildcard $(SRC)/*.c $(SRC)/net/*.c)
 OBJS	:=	$(patsubst $(SRC)/%.c,$(BIN)/%.o,$(SRCS))
 DEPS	:=	$(patsubst $(SRC)/%.c,$(BIN)/$(DEP)/%.d,$(SRCS))
 
@@ -27,37 +27,35 @@ release: all
 .PHONY: all
 all: $(EXE)
 
+$(BIN):
+	mkdir -p $@
+
 $(BIN)/$(DEP):
-	@mkdir -p $@
+	mkdir -p $@
+
+$(TST)/$(BIN):
+	mkdir -p $@
 
 $(BIN)/$(DEP)/%.d: $(SRC)/%.c $(BIN)/$(DEP)
 	$(CC) $(CFLAGS) $< -I$(INC) -MM >$@
 
--include $(DEPS)
-$(BIN):
-	@mkdir -p $(dir $@)
-
-$(BIN)/%.o: $(SRC)/%.c
+$(BIN)/%.o: $(SRC)/%.c $(BIN)
 	$(CC) $(CFLAGS) -I$(INC) -c $< -o $@
 
-$(TST)/$(BIN):
-	@mkdir -p $@
-
 $(TST)/$(BIN)/%: INC += -Ilibs/minunit/
-$(TST)/$(BIN)/%: $(TST)/%.c $(TST)/$(BIN)
+$(TST)/$(BIN)/%: $(TST)/%.c $(TST)/$(BIN) $(TOBJS)
 	$(CC) $(CFLAGS) -I$(INC) $(TOBJS) $< -o $@
 
 clean:
-	$(RM) $(DEPS)
-	$(RM) $(OBJS)
-	$(RM) $(TBINS)
+	$(RM) $(DEPS) $(OBJS) $(TBINS)
 	$(RM) -r $(TST)/$(BIN)
 
 purge: clean
 	$(RM) $(EXE)
 
+-include $(DEPS)
 $(EXE): $(OBJS)
 	$(CC) $(CFLAGS) -pthread $^ -o $@
 
-test: $(TBINS)
+test: $(TBINS) $(TST)/$(BIN)
 	@for test in $(TBINS) ; do ./$$test ; done
