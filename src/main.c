@@ -2,34 +2,21 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "config.h"
 #include "net/server.h"
 #include "threading.h"
-
-/* These are the constant values and default
-   config values if any/none are provided. */
-enum
-{
-  BACKLOG = 9,
-  PORT = 8080
-};
 
 int
 main (void)
 {
   payload_t pld;
   pthread_t pid;
-  char *env_backlog;
-  char *env_port;
-  int backlog, port;
   p_cprops_t client;
   p_sprops_t server;
+  configurations_t cfg;
 
-  env_port = getenv ("PORT");
-  env_backlog = getenv ("BACKLOG");
-  port = env_port ? atoi (env_port) : PORT;
-  backlog = env_backlog ? atoi (env_backlog) : BACKLOG;
-
-  server = initialize_server (backlog, port);
+  cfg = get_config ();
+  server = initialize_server (cfg.backlog, cfg.port);
   puts ("waiting for traffic");
   client = accept_connection (server);
 
