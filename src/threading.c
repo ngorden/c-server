@@ -1,6 +1,7 @@
 #include "threading.h"
 
 #include "net/server.h"
+#include "structures/queue.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -15,6 +16,9 @@ handle_client (p_cprops_t client)
   char buf[MAXBUF];
   size_t bytesread, bytessent;
   size_t msglen = 0;
+
+  if (client == NULL)
+    return;
 
   while ((bytesread = get_from_client (client, buf + msglen, MAXBUF)) > 0)
     {
@@ -37,7 +41,14 @@ server_thread (void *args)
 {
   p_cprops_t client;
   payload_t *payload = (payload_t *)args;
-  client = (p_cprops_t)payload->client_data;
+  pthread_mutex_lock (payload->mutex);
+  if ((client = (p_cprops_t)dequeue ()) == NULL)
+    {
+      pthread_cond_wait (payload->cond, payload->mutex);
+      client = (p_cprops_t)dequeue ();
+    }
+  pthread_mutex_unlock (payload->mutex);
+
   handle_client (client);
   pthread_exit (NULL);
 }
