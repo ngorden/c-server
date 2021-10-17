@@ -43,11 +43,10 @@ $(TST)/$(BIN)/%: $(TST)/%.c $(TST)/$(BIN) $(TOBJS)
 	$(CC) $(CFLAGS) -I$(INC) $(TOBJS) $< -o $@
 
 clean:
-	$(RM) $(DEPS) $(OBJS) $(TBINS)
-	$(RM) -r $(TST)/$(BIN)
+	$(RM) -r $(DEPS) $(OBJS) $(TBINS) $(BIN)/$(DEP)
 
 purge: clean
-	$(RM) $(EXE)
+	$(RM) -r $(EXE) $(TST)/$(BIN) $(BIN)
 
 -include $(DEPS)
 $(EXE): $(OBJS)
