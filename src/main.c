@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "config.h"
@@ -23,10 +22,9 @@ main (void)
   pld.mutex = &mtx;
 
   threads = initialize_threads (&cfg, &pld);
-
   server = initialize_server (cfg.backlog, cfg.port);
-  puts ("waiting for traffic");
   client = accept_connection (server);
+
   pthread_mutex_lock (&mtx);
   enqueue (client);
   pthread_cond_signal (&cnd);

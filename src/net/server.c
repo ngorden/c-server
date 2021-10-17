@@ -1,6 +1,7 @@
 #include "server.h"
 
 #include <netdb.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -65,6 +66,7 @@ initialize_server (int backlog, int port)
   setsockopt (props->sockfd, SOL_SOCKET, SO_REUSEADDR, &enabled, sizeof (int));
   bind (props->sockfd, (struct sockaddr *)&props->hints, sizeof props->hints);
   listen (props->sockfd, backlog);
+  printf ("waiting for traffic on %d\n", port);
 
   return props;
 }

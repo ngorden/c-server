@@ -40,7 +40,7 @@ $(BIN)/%.o: $(SRC)/%.c
 
 $(TST)/$(BIN)/%: INC += -Ilibs/minunit/
 $(TST)/$(BIN)/%: $(TST)/%.c $(TST)/$(BIN) $(TOBJS)
-	$(CC) $(CFLAGS) -I$(INC) $(TOBJS) $< -o $@
+	$(CC) $(CFLAGS) -pthread -I$(INC) $(TOBJS) $< -o $@
 
 clean:
 	$(RM) -r $(DEPS) $(OBJS) $(TBINS) $(BIN)/$(DEP)

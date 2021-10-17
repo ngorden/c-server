@@ -1,4 +1,5 @@
 #include "minunit.h"
+
 #include "structures/queue.h"
 
 MU_TEST (complex)
