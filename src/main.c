@@ -21,7 +21,7 @@ main (void)
   pld.cond = &cnd;
   pld.mutex = &mtx;
 
-  threads = initialize_threads (&cfg, &pld);
+  threads = initialize_threads (&cfg, &pld, server_thread);
   server = initialize_server (cfg.backlog, cfg.port);
   client = accept_connection (server);
 

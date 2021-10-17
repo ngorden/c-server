@@ -22,9 +22,11 @@ typedef struct
  *  @param[in] pld pointer to the payload to be sent to
  *  the server thread
  *
+ *  @param[in] thread_func function for the server to run
+ *
  *  @return pointer to the thread objects
  */
-pthread_t *initialize_threads (void*, payload_t* );
+pthread_t *initialize_threads (void*, payload_t*, void*(void*) );
 
 /*! @brief cleanup the threading objects at the end of use
  *

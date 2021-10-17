@@ -68,7 +68,7 @@ thread_cleanup (void *vcfg, pthread_t *threads, pthread_cond_t *cnd)
 }
 
 pthread_t *
-initialize_threads (void *vcfg, payload_t *pld)
+initialize_threads (void *vcfg, payload_t *pld, void *(*thread_func) (void *))
 {
   int i;
   pthread_t *threads;
@@ -76,7 +76,7 @@ initialize_threads (void *vcfg, payload_t *pld)
 
   threads = malloc (cfg->thread_count * sizeof (pthread_t));
   for (i = 0; i < cfg->thread_count; i++)
-    pthread_create (&threads[i], NULL, server_thread, pld);
+    pthread_create (&threads[i], NULL, thread_func, pld);
 
   return threads;
 }
