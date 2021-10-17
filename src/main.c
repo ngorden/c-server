@@ -3,22 +3,21 @@
 #include <string.h>
 
 #include "net/server.h"
+#include "threading.h"
 
 /* These are the constant values and default
    config values if any/none are provided. */
 enum
 {
   BACKLOG = 9,
-  PORT = 8080,
-  MAXBUF = (1 << 12)
+  PORT = 8080
 };
 
 int
 main (void)
 {
-  char buf[MAXBUF];
-  size_t msglen;
-  size_t bytesread;
+  payload_t pld;
+  pthread_t pid;
   char *env_backlog;
   char *env_port;
   int backlog, port;
@@ -31,24 +30,12 @@ main (void)
   backlog = env_backlog ? atoi (env_backlog) : BACKLOG;
 
   server = initialize_server (backlog, port);
-
-  msglen = 0;
   puts ("waiting for traffic");
   client = accept_connection (server);
 
-  while ((bytesread = get_from_client (client, buf + msglen, MAXBUF)) > 0)
-    {
-      msglen += bytesread;
-      printf ("got %ld bytes from client.\n", bytesread);
-      if (buf[msglen - 1] == '\n')
-        break;
-    }
-
-  printf ("final client message was %ld bytes\n", bytesread);
-  printf ("client message:\n\t%s\n\n", buf);
-  bzero (buf, MAXBUF);
-  strcpy (buf, "HTTP/1.1 200 OK\r\n\r\nHello");
-  send_to_client (client, buf, strlen (buf));
+  pld.client_data = client;
+  pthread_create (&pid, NULL, server_thread, &pld);
+  pthread_join (pid, NULL);
 
   disconnect_client (client);
   dispose_server (server);
