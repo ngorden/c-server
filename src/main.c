@@ -38,6 +38,7 @@ main (void)
   for (i = 0; i < cfg.thread_count; i++)
     pthread_join (threads[i], NULL);
 
+  free (threads);
   disconnect_client (client);
   dispose_server (server);
   return EXIT_SUCCESS;
