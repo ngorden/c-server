@@ -27,6 +27,9 @@ release: all
 .PHONY: all
 all: $(EXE)
 
+$(TST)/$(BIN):
+	@mkdir -p $@
+
 $(BIN)/$(DEP)/%.d: $(SRC)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $< -I$(INC) -MM >$@
