@@ -8,7 +8,7 @@ INC	:=	src
 SRC	:=	src
 TST	:=	test
 
-SRCS	:=	$(wildcard $(SRC)/*.c $(SRC)/net/*.c)
+SRCS	:=	$(wildcard $(SRC)/*.c $(SRC)/net/*.c $(SRC)/structures/*.c)
 OBJS	:=	$(patsubst $(SRC)/%.c,$(BIN)/%.o,$(SRCS))
 DEPS	:=	$(patsubst $(SRC)/%.c,$(BIN)/$(DEP)/%.d,$(SRCS))
 
@@ -27,19 +27,12 @@ release: all
 .PHONY: all
 all: $(EXE)
 
-$(BIN):
-	mkdir -p $@
-
-$(BIN)/$(DEP):
-	mkdir -p $@
-
-$(TST)/$(BIN):
-	mkdir -p $@
-
-$(BIN)/$(DEP)/%.d: $(SRC)/%.c $(BIN)/$(DEP)
+$(BIN)/$(DEP)/%.d: $(SRC)/%.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $< -I$(INC) -MM >$@
 
-$(BIN)/%.o: $(SRC)/%.c $(BIN)
+$(BIN)/%.o: $(SRC)/%.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -I$(INC) -c $< -o $@
 
 $(TST)/$(BIN)/%: INC += -Ilibs/minunit/
