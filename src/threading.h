@@ -14,6 +14,28 @@ typedef struct
   pthread_mutex_t* mutex;
 } payload_t;
 
+/*! @brief initialize the threading objects needed
+ *
+ *  @param[in] cfg pointer to the application
+ *  configuration
+ *
+ *  @param[in] pld pointer to the payload to be sent to
+ *  the server thread
+ *
+ *  @return pointer to the thread objects
+ */
+pthread_t *initialize_threads (void*, payload_t* );
+
+/*! @brief cleanup the threading objects at the end of use
+ *
+ *  @param[in] cfg pointer to the application configuration
+ *
+ *  @param[in] thread pointer the the thread objects
+ *
+ *  @param[in] cnd pointer to the condition variable
+ */
+void thread_cleanup (void*, pthread_t *, pthread_cond_t*);
+
 /*! @brief this function is the main server function,
  *  which is to live on its own thread, running asyncronously
  *

@@ -12,7 +12,6 @@ pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 int
 main (void)
 {
-  int i;
   payload_t pld;
   p_cprops_t client;
   p_sprops_t server;
@@ -23,9 +22,7 @@ main (void)
   pld.cond = &cnd;
   pld.mutex = &mtx;
 
-  threads = malloc (cfg.thread_count * sizeof (pthread_t));
-  for (i = 0; i < cfg.thread_count; i++)
-    pthread_create (&threads[i], NULL, server_thread, &pld);
+  threads = initialize_threads (&cfg, &pld);
 
   server = initialize_server (cfg.backlog, cfg.port);
   puts ("waiting for traffic");
@@ -35,11 +32,7 @@ main (void)
   pthread_cond_signal (&cnd);
   pthread_mutex_unlock (&mtx);
 
-  for (i = 0; i < cfg.thread_count; i++)
-    pthread_join (threads[i], NULL);
-
-  free (threads);
-  disconnect_client (client);
+  thread_cleanup (&cfg, threads, &cnd);
   dispose_server (server);
   return EXIT_SUCCESS;
 }
