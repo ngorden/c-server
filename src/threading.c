@@ -86,14 +86,17 @@ server_thread (void *arg)
 {
   p_cprops_t client;
   payload_t *payload = (payload_t *)arg;
-  pthread_mutex_lock (payload->mutex);
-  if ((client = (p_cprops_t)dequeue ()) == NULL)
+  while (payload->keep_alive)
     {
-      pthread_cond_wait (payload->cond, payload->mutex);
-      client = (p_cprops_t)dequeue ();
+      pthread_mutex_lock (payload->mutex);
+      if ((client = (p_cprops_t)dequeue ()) == NULL)
+        {
+          pthread_cond_wait (payload->cond, payload->mutex);
+          client = (p_cprops_t)dequeue ();
+        }
+      pthread_mutex_unlock (payload->mutex);
+      handle_client (client);
     }
-  pthread_mutex_unlock (payload->mutex);
 
-  handle_client (client);
   pthread_exit (NULL);
 }

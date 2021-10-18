@@ -5,6 +5,7 @@
 #include "structures/queue.h"
 #include "threading.h"
 
+int keep_alive = 1;
 pthread_cond_t cnd = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 
@@ -19,16 +20,20 @@ main (void)
 
   cfg = get_config ();
   pld.cond = &cnd;
+  pld.keep_alive = &keep_alive;
   pld.mutex = &mtx;
 
   threads = initialize_threads (&cfg, &pld, server_thread);
   server = initialize_server (cfg.backlog, cfg.port);
-  client = accept_connection (server);
 
-  pthread_mutex_lock (&mtx);
-  enqueue (client);
-  pthread_cond_signal (&cnd);
-  pthread_mutex_unlock (&mtx);
+  while (keep_alive)
+    {
+      client = accept_connection (server);
+      pthread_mutex_lock (&mtx);
+      enqueue (client);
+      pthread_cond_signal (&cnd);
+      pthread_mutex_unlock (&mtx);
+    }
 
   thread_cleanup (&cfg, threads, &cnd);
   dispose_server (server);

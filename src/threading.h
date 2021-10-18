@@ -10,6 +10,7 @@
 
 typedef struct
 {
+  int* keep_alive;
   pthread_cond_t* cond;
   pthread_mutex_t* mutex;
 } payload_t;
